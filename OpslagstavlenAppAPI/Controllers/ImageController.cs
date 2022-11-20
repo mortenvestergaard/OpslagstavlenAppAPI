@@ -15,7 +15,8 @@ namespace OpslagstavlenAppAPI.Controllers
         [Route("GetImages")]
         public IEnumerable<string> Get()
         {
-            string imagePath = @"C:\Users\mort286f\Pictures\OpslagstavleImages";
+            //string imagePath = @"C:\Users\mort286f\Pictures\OpslagstavleImages";
+            string imagePath = @"C:\Users\Morten\OneDrive\Pictures\OpslagstavleImages";
             List<string> images = Directory.GetFiles(imagePath, "*.*", SearchOption.TopDirectoryOnly).ToList();
             List<string> resultImages = new List<string>();
 
@@ -26,11 +27,11 @@ namespace OpslagstavlenAppAPI.Controllers
             return resultImages;
         }
 
-        //[HttpPost]
-        //[Route("PostImage")]
-        //public IEnumerable<string> Post()
-        //{
-
-        //}
+        [HttpPost]
+        [Route("PostImage")]
+        public IEnumerable<string> Post(string imageString)
+        {
+            return imageString.Split('\u002C');
+        }
     }
 }
