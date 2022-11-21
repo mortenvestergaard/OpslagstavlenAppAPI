@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using System.Drawing;
 
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace OpslagstavlenAppAPI.Controllers
 {
@@ -15,23 +14,37 @@ namespace OpslagstavlenAppAPI.Controllers
         [Route("GetImages")]
         public IEnumerable<string> Get()
         {
-            //string imagePath = @"C:\Users\mort286f\Pictures\OpslagstavleImages";
-            string imagePath = @"C:\Users\Morten\OneDrive\Pictures\OpslagstavleImages";
-            List<string> images = Directory.GetFiles(imagePath, "*.*", SearchOption.TopDirectoryOnly).ToList();
+            List<string> images = Directory.GetFiles("Images", "*.*", SearchOption.AllDirectories).ToList();
             List<string> resultImages = new List<string>();
-
+            
             foreach (string image in images)
             {
-                resultImages.Add(Convert.ToBase64String(System.IO.File.ReadAllBytes(image)));
+                FileInfo imageInfo = new FileInfo(image);
+                byte[] imageBytes = new byte[imageInfo.Length];
+                using (FileStream stream = imageInfo.OpenRead())
+                {
+                    stream.Read(imageBytes, 0, imageBytes.Length);
+                }
+                resultImages.Add(Convert.ToBase64String(imageBytes));
             }
             return resultImages;
         }
 
         [HttpPost]
         [Route("PostImage")]
-        public IEnumerable<string> Post(string imageString)
+        public IActionResult Post(string imageString)
         {
-            return imageString.Split('\u002C');
+            Random rndm = new Random();
+            int imageNumber = rndm.Next(1, 1000);
+            if (!String.IsNullOrEmpty(imageString))
+            {
+                string path = "Images/"+imageNumber+".jpg";
+                var formattedString = imageString.Replace(" ", "+");
+                byte[] imageBytes = Convert.FromBase64String(formattedString);
+                System.IO.File.WriteAllBytes(path, imageBytes);
+                return Content("Succesfully saved image");
+            }
+            return Content("Couldnt save image, something went wrong");
         }
     }
 }
