@@ -9,7 +9,6 @@ namespace OpslagstavlenAppAPI.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
-        // GET: api/<ImageController>
         [HttpGet]
         [Route("GetImages")]
         public IEnumerable<string> Get()
